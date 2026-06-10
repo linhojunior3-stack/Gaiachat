@@ -1,98 +1,632 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
 <title>Gaia Chat</title>
+
+<link rel="manifest"
+href="manifest.json">
+
+<meta name="theme-color"
+content="#075E54">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#ece5dd;height:100vh;display:flex;flex-direction:column}
-.header{background:#075E54;color:white;padding:15px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between}
-#onlineCount{font-size:14px}
-.chat{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column}
-.msg{padding:10px;border-radius:10px;margin:5px;max-width:80%;word-wrap:break-word}
-.me{background:#DCF8C6;align-self:flex-end}
-.other{background:white;align-self:flex-start}
-.name{font-size:12px;font-weight:bold;margin-bottom:3px;color:#075E54}
-.bottom{display:flex;padding:10px;background:white}
-.bottom input{flex:1;padding:12px;border:1px solid #ccc;border-radius:25px;outline:none}
-.bottom button{margin-left:10px;padding:12px 20px;border:none;border-radius:25px;background:#25D366;color:white;font-weight:bold}
-.login{position:fixed;inset:0;background:white;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:10px}
-.login input{padding:12px;width:250px}
-.login button{padding:12px;width:250px;background:#075E54;color:white;border:none}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#ece5dd;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+.header{
+
+background:#075E54;
+
+padding:15px;
+
+color:white;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+font-size:20px;
+
+font-weight:bold;
+
+}
+
+#onlineCount{
+
+font-size:14px;
+
+}
+
+.chat{
+
+flex:1;
+
+overflow-y:auto;
+
+padding:10px;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.msg{
+
+max-width:80%;
+
+padding:10px;
+
+margin:5px;
+
+border-radius:10px;
+
+word-break:break-word;
+
+}
+
+.me{
+
+background:#DCF8C6;
+
+align-self:flex-end;
+
+}
+
+.other{
+
+background:white;
+
+align-self:flex-start;
+
+}
+
+.name{
+
+font-size:12px;
+
+font-weight:bold;
+
+margin-bottom:5px;
+
+color:#075E54;
+
+}
+
+.time{
+
+font-size:10px;
+
+text-align:right;
+
+margin-top:5px;
+
+opacity:.6;
+
+}
+
+.bottom{
+
+display:flex;
+
+padding:10px;
+
+background:white;
+
+}
+
+.bottom input{
+
+flex:1;
+
+padding:12px;
+
+border:1px solid #ccc;
+
+border-radius:25px;
+
+outline:none;
+
+}
+
+.bottom button{
+
+margin-left:10px;
+
+padding:12px 20px;
+
+border:none;
+
+border-radius:25px;
+
+background:#25D366;
+
+color:white;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.login{
+
+position:fixed;
+
+inset:0;
+
+background:white;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+flex-direction:column;
+
+gap:10px;
+
+z-index:100;
+
+}
+
+.login h2{
+
+color:#075E54;
+
+}
+
+.login input{
+
+padding:12px;
+
+width:250px;
+
+}
+
+.login button{
+
+padding:12px;
+
+width:250px;
+
+background:#075E54;
+
+color:white;
+
+border:none;
+
+cursor:pointer;
+
+}
+
+.status{
+
+font-size:12px;
+
+padding:5px;
+
+text-align:center;
+
+background:#fff3cd;
+
+display:none;
+
+}
+
 </style>
+
 </head>
+
 <body>
-<div id="login" class="login">
-<h2>Gaia Chat</h2>
-<input id="username" placeholder="Masukkan nama">
-<button onclick="startChat()">Masuk</button>
-</div>
-<div class="header"><span>Gaia Chat</span><span id="onlineCount">0 Online</span></div>
-<div id="chat" class="chat"></div>
-<div class="bottom">
-<input id="message" placeholder="Ketik pesan...">
-<button onclick="sendMessage()">Kirim</button>
+
+<div
+id="login"
+class="login">
+
+<h2>
+
+Gaia Chat
+
+</h2>
+
+<input
+
+id="username"
+
+placeholder="Masukkan nama">
+
+<button
+
+onclick="startChat()">
+
+Masuk
+
+</button>
+
 </div>
 
+<div
+class="header">
+
+<span>
+
+Gaia Chat
+
+</span>
+
+<span
+id="onlineCount">
+
+0 Online
+
+</span>
+
+</div>
+
+<div
+id="status"
+class="status">
+
+Menghubungkan...
+
+</div>
+
+<div
+
+id="chat"
+
+class="chat">
+
+</div>
+
+<div
+class="bottom">
+
+<input
+
+id="message"
+
+placeholder="Ketik pesan...">
+
+<button
+
+onclick="sendMessage()">
+
+Kirim
+
+</button>
+
+</div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyA7JYke6uM3VEyMUUYyxL4eN8-uJxVdQbw",
-authDomain: "gaia-chat-b0f2e.firebaseapp.com",
-projectId: "gaia-chat-b0f2e",
-storageBucket: "gaia-chat-b0f2e.firebasestorage.app",
-messagingSenderId: "309260239039",
-appId: "1:309260239039:web:ce76270522d0556160460a",
-measurementId: "G-N8FP21REQH"
+import {
+initializeApp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot,
+setDoc,
+deleteDoc,
+doc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey:"AIzaSyA7JYke6uM3VEyMUUYyxL4eN8-uJxVdQbw",
+
+authDomain:"gaia-chat-b0f2e.firebaseapp.com",
+
+projectId:"gaia-chat-b0f2e",
+
+storageBucket:"gaia-chat-b0f2e.firebasestorage.app",
+
+messagingSenderId:"309260239039",
+
+appId:"1:309260239039:web:ce76270522d0556160460a"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-let username = "";
+const app=initializeApp(firebaseConfig);
 
-window.startChat = async () => {
-username = document.getElementById("username").value.trim();
-if(!username){ alert("Masukkan nama"); return; }
-document.getElementById("login").style.display="none";
-await setDoc(doc(db,"onlineUsers",username),{
-name:username,online:true,time:Date.now()
-});
+const db=getFirestore(app);
+
+let username=
+localStorage.getItem("gaiaUser")||"";
+
+const chat=
+document.getElementById("chat");
+
+const status=
+document.getElementById("status");
+
+if(username){
+
+document.getElementById("login")
+.style.display="none";
+
+setOnline();
+
+}
+
+window.startChat=
+async()=>{
+
+username=
+document.getElementById("username")
+.value.trim();
+
+if(username==""){
+
+alert("Masukkan nama");
+
+return;
+
+}
+
+localStorage.setItem(
+"gaiaUser",
+username
+);
+
+document.getElementById("login")
+.style.display="none";
+
+setOnline();
+
 };
 
-window.sendMessage = async () => {
-const input=document.getElementById("message");
-const text=input.value.trim();
-if(!text || !username) return;
-await addDoc(collection(db,"messages"),{
-name:username,text:text,time:Date.now()
-});
+async function setOnline(){
+
+status.style.display="block";
+
+status.innerText="Terhubung";
+
+await setDoc(
+
+doc(
+db,
+"onlineUsers",
+username
+),
+
+{
+
+name:username,
+
+time:Date.now()
+
+}
+
+);
+
+status.style.display="none";
+
+}
+
+window.sendMessage=
+async()=>{
+
+const input=
+document.getElementById("message");
+
+const text=
+input.value.trim();
+
+if(text=="") return;
+
+await addDoc(
+
+collection(
+db,
+"messages"
+),
+
+{
+
+name:username,
+
+text:text,
+
+time:Date.now()
+
+}
+
+);
+
 input.value="";
+
 };
 
-const q=query(collection(db,"messages"),orderBy("time"));
-onSnapshot(q,(snapshot)=>{
-const chat=document.getElementById("chat");
+const q=
+query(
+
+collection(
+db,
+"messages"
+),
+
+orderBy("time")
+
+);
+
+onSnapshot(
+
+q,
+
+(snapshot)=>{
+
 chat.innerHTML="";
+
 snapshot.forEach((d)=>{
+
 const data=d.data();
-const div=document.createElement("div");
-div.className="msg "+(data.name===username?"me":"other");
-div.innerHTML=`<div class="name">${data.name}</div>${data.text}`;
-chat.appendChild(div);
-});
-chat.scrollTop=chat.scrollHeight;
+
+const box=
+document.createElement("div");
+
+box.className=
+"msg "+
+(data.name==username?
+"me":"other");
+
+const nm=
+document.createElement("div");
+
+nm.className="name";
+
+nm.textContent=
+data.name;
+
+const tx=
+document.createElement("div");
+
+tx.textContent=
+data.text;
+
+const tm=
+document.createElement("div");
+
+tm.className="time";
+
+tm.textContent=
+new Date(
+data.time
+).toLocaleTimeString(
+"id-ID",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+box.appendChild(nm);
+
+box.appendChild(tx);
+
+box.appendChild(tm);
+
+chat.appendChild(box);
+
 });
 
-onSnapshot(collection(db,"onlineUsers"),(snapshot)=>{
-document.getElementById("onlineCount").innerText=snapshot.size+" Online";
-});
+chat.scrollTop=
+chat.scrollHeight;
 
-document.getElementById("message").addEventListener("keypress",(e)=>{
-if(e.key==="Enter") sendMessage();
-});
+}
+
+);
+
+onSnapshot(
+
+collection(
+db,
+"onlineUsers"
+),
+
+(snapshot)=>{
+
+document
+.getElementById(
+"onlineCount"
+)
+
+.innerText=
+
+snapshot.size+
+
+" Online";
+
+}
+
+);
+
+document
+.getElementById("message")
+.addEventListener(
+
+"keypress",
+
+(e)=>{
+
+if(e.key=="Enter"){
+
+sendMessage();
+
+}
+
+}
+
+);
+
+window
+.addEventListener(
+
+"beforeunload",
+
+async()=>{
+
+if(username){
+
+await deleteDoc(
+
+doc(
+db,
+"onlineUsers",
+username
+)
+
+);
+
+}
+
+}
+
+);
+
+if(
+"serviceWorker"
+in navigator
+){
+
+navigator
+.serviceWorker
+.register(
+"./sw.js"
+);
+
+}
+
 </script>
+
 </body>
+
 </html>
