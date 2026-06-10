@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaia Chat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#ece5dd;height:100vh;display:flex;flex-direction:column}
+.header{background:#075E54;color:white;padding:15px;font-size:20px;font-weight:bold;display:flex;justify-content:space-between}
+#onlineCount{font-size:14px}
+.chat{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column}
+.msg{padding:10px;border-radius:10px;margin:5px;max-width:80%;word-wrap:break-word}
+.me{background:#DCF8C6;align-self:flex-end}
+.other{background:white;align-self:flex-start}
+.name{font-size:12px;font-weight:bold;margin-bottom:3px;color:#075E54}
+.bottom{display:flex;padding:10px;background:white}
+.bottom input{flex:1;padding:12px;border:1px solid #ccc;border-radius:25px;outline:none}
+.bottom button{margin-left:10px;padding:12px 20px;border:none;border-radius:25px;background:#25D366;color:white;font-weight:bold}
+.login{position:fixed;inset:0;background:white;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:10px}
+.login input{padding:12px;width:250px}
+.login button{padding:12px;width:250px;background:#075E54;color:white;border:none}
+</style>
+</head>
+<body>
+<div id="login" class="login">
+<h2>Gaia Chat</h2>
+<input id="username" placeholder="Masukkan nama">
+<button onclick="startChat()">Masuk</button>
+</div>
+<div class="header"><span>Gaia Chat</span><span id="onlineCount">0 Online</span></div>
+<div id="chat" class="chat"></div>
+<div class="bottom">
+<input id="message" placeholder="Ketik pesan...">
+<button onclick="sendMessage()">Kirim</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyA7JYke6uM3VEyMUUYyxL4eN8-uJxVdQbw",
+authDomain: "gaia-chat-b0f2e.firebaseapp.com",
+projectId: "gaia-chat-b0f2e",
+storageBucket: "gaia-chat-b0f2e.firebasestorage.app",
+messagingSenderId: "309260239039",
+appId: "1:309260239039:web:ce76270522d0556160460a",
+measurementId: "G-N8FP21REQH"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let username = "";
+
+window.startChat = async () => {
+username = document.getElementById("username").value.trim();
+if(!username){ alert("Masukkan nama"); return; }
+document.getElementById("login").style.display="none";
+await setDoc(doc(db,"onlineUsers",username),{
+name:username,online:true,time:Date.now()
+});
+};
+
+window.sendMessage = async () => {
+const input=document.getElementById("message");
+const text=input.value.trim();
+if(!text || !username) return;
+await addDoc(collection(db,"messages"),{
+name:username,text:text,time:Date.now()
+});
+input.value="";
+};
+
+const q=query(collection(db,"messages"),orderBy("time"));
+onSnapshot(q,(snapshot)=>{
+const chat=document.getElementById("chat");
+chat.innerHTML="";
+snapshot.forEach((d)=>{
+const data=d.data();
+const div=document.createElement("div");
+div.className="msg "+(data.name===username?"me":"other");
+div.innerHTML=`<div class="name">${data.name}</div>${data.text}`;
+chat.appendChild(div);
+});
+chat.scrollTop=chat.scrollHeight;
+});
+
+onSnapshot(collection(db,"onlineUsers"),(snapshot)=>{
+document.getElementById("onlineCount").innerText=snapshot.size+" Online";
+});
+
+document.getElementById("message").addEventListener("keypress",(e)=>{
+if(e.key==="Enter") sendMessage();
+});
+</script>
+</body>
+</html>
